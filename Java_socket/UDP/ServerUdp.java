@@ -132,7 +132,7 @@ public class ServerUdp {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("LineServer: termino...");
+		System.out.println("ServerUdp: termino...");
 		socket.close();
 	}
 }
