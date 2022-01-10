@@ -13,7 +13,7 @@ public class ServerUdp {
 	// porta nel range consentito 1024-65535!
 	// dichiarata come statica perch� caratterizza il server
 	private static final int PORT = 4445;
-    private static final int buffer = 256;
+	private static final int buffer = 256;
 
 	public static void main(String[] args) {
 
@@ -48,8 +48,7 @@ public class ServerUdp {
 			socket = new DatagramSocket(port);
 			packet = new DatagramPacket(buf, buf.length);
 			System.out.println("Creata la socket: " + socket);
-		}
-		catch (SocketException e) {
+		} catch (SocketException e) {
 			System.out.println("Problemi nella creazione della socket: ");
 			e.printStackTrace();
 			System.exit(1);
@@ -68,13 +67,12 @@ public class ServerUdp {
 
 			while (true) {
 				System.out.println("\nIn attesa di richieste...");
-				
+
 				// ricezione del datagramma
 				try {
 					packet.setData(buf);
 					socket.receive(packet);
-				}
-				catch (IOException e) {
+				} catch (IOException e) {
 					System.err.println("Problemi nella ricezione del datagramma: "
 							+ e.getMessage());
 					e.printStackTrace();
@@ -88,16 +86,15 @@ public class ServerUdp {
 					diStream = new DataInputStream(biStream);
 					richiesta = diStream.readUTF();
 					st = new StringTokenizer(richiesta);
-                    // Esempio operazioni su file, sostituire con l'operazione desiderata
-                    /*
-					nomeFile = st.nextToken();
-					numLinea = Integer.parseInt(st.nextToken());
-					System.out.println("Richiesta linea " + numLinea + " del file " + nomeFile);
-                    */
-				}
-				catch (Exception e) {
+					// Esempio operazioni su file, sostituire con l'operazione desiderata
+					/*
+					 * nomeFile = st.nextToken();
+					 * numLinea = Integer.parseInt(st.nextToken());
+					 * System.out.println("Richiesta linea " + numLinea + " del file " + nomeFile);
+					 */
+				} catch (Exception e) {
 					System.err.println("Problemi nella lettura della richiesta: "
-					    + numLinea);
+							+ numLinea);
 					e.printStackTrace();
 					continue;
 					// il server continua a fornire il servizio ricominciando dall'inizio
@@ -106,18 +103,17 @@ public class ServerUdp {
 
 				// preparazione della linea e invio della risposta
 				try {
-					//linea = LineUtility.getLine(nomeFile, numLinea);
-                    // Inserire operazioni desiderate
+					// linea = LineUtility.getLine(nomeFile, numLinea);
+					// Inserire operazioni desiderate
 					boStream = new ByteArrayOutputStream();
 					doStream = new DataOutputStream(boStream);
 					doStream.writeUTF(linea);
 					data = boStream.toByteArray();
 					packet.setData(data, 0, data.length);
 					socket.send(packet);
-				}
-				catch (IOException e) {
+				} catch (IOException e) {
 					System.err.println("Problemi nell'invio della risposta: "
-				      + e.getMessage());
+							+ e.getMessage());
 					e.printStackTrace();
 					continue;
 					// il server continua a fornire il servizio ricominciando dall'inizio

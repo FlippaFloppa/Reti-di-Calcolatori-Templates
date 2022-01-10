@@ -14,29 +14,30 @@ import java.util.StringTokenizer;
 
 public class ClientUdp {
 
-    private static final int buffer = 256;
-    public static void main(String[] args) {
+	private static final int buffer = 256;
+
+	public static void main(String[] args) {
 
 		InetAddress addr = null;
 		int port = -1;
-		
+
 		try {
 			if (args.length == 2) {
-		    addr = InetAddress.getByName(args[0]);
-		    port = Integer.parseInt(args[1]);
+				addr = InetAddress.getByName(args[0]);
+				port = Integer.parseInt(args[1]);
 			} else {
-                // Modifica secondo le specifiche
+				// Modifica secondo le specifiche
 				System.out.println("Usage: java ClientUdp serverIP serverPort");
-			    System.exit(1);
+				System.exit(1);
 			}
 		} catch (UnknownHostException e) {
 			System.out
-		      .println("Problemi nella determinazione dell'endpoint del server : ");
+					.println("Problemi nella determinazione dell'endpoint del server : ");
 			e.printStackTrace();
 			System.out.println("ClientUdp: interrompo...");
 			System.exit(2);
 		}
-	
+
 		DatagramSocket socket = null;
 		DatagramPacket packet = null;
 		byte[] buf = new byte[buffer];
@@ -45,7 +46,7 @@ public class ClientUdp {
 		// e creazione datagram packet
 		try {
 			socket = new DatagramSocket();
-			//socket.setSoTimeout(30000); OPZIONALE
+			// socket.setSoTimeout(30000); OPZIONALE
 			packet = new DatagramPacket(buf, buf.length, addr, port);
 			System.out.println("\nClientUdp: avviato");
 			System.out.println("Creata la socket: " + socket);
@@ -58,31 +59,30 @@ public class ClientUdp {
 
 		BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 
-        //--------------------------------
-        // Modifca questa stringa secondo le specifiche
-        //-------------------------------------
-        String operazione="\nINSERIRE OPERAZIONE\n^D(Unix)/^Z(Win)+invio per uscire";
+		// --------------------------------
+		// Modifca questa stringa secondo le specifiche
+		// -------------------------------------
+		String operazione = "\nINSERIRE OPERAZIONE\n^D(Unix)/^Z(Win)+invio per uscire";
 
 		System.out
-			.print(operazione);
+				.print(operazione);
 
 		try {
 			ByteArrayOutputStream boStream = null;
 			DataOutputStream doStream = null;
 			byte[] data = null;
-            String line = null;
+			String line = null;
 			String richiesta = null;
 			String risposta = null;
 			ByteArrayInputStream biStream = null;
 			DataInputStream diStream = null;
-		
+
 			while ((line = stdIn.readLine()) != null) {
 
-                //----------------------------------
-                // Inserire operazioni sull'input
-                // ------------------------------
-                richiesta=line; //esempio
-
+				// ----------------------------------
+				// Inserire operazioni sull'input
+				// ------------------------------
+				richiesta = line; // esempio
 
 				// riempimento e invio del pacchetto
 				try {
@@ -97,7 +97,7 @@ public class ClientUdp {
 					System.out.println("Problemi nell'invio della richiesta: ");
 					e.printStackTrace();
 					System.out
-				      .print(operazione);
+							.print(operazione);
 					continue;
 					// il client continua l'esecuzione riprendendo dall'inizio del ciclo
 				}
@@ -112,7 +112,7 @@ public class ClientUdp {
 					System.out.println("Problemi nella ricezione del datagramma: ");
 					e.printStackTrace();
 					System.out
-						.print(operazione);
+							.print(operazione);
 					continue;
 					// il client continua l'esecuzione riprendendo dall'inizio del ciclo
 				}
@@ -121,22 +121,22 @@ public class ClientUdp {
 					diStream = new DataInputStream(biStream);
 					risposta = diStream.readUTF();
 
-                    //-----------------------------
-                    // Modificare per eventuali operazioni sulla risposta
-                    //-----------------------------
+					// -----------------------------
+					// Modificare per eventuali operazioni sulla risposta
+					// -----------------------------
 					System.out.println("Risposta: " + risposta);
 				} catch (IOException e) {
 					System.out.println("Problemi nella lettura della risposta: ");
 					e.printStackTrace();
 					System.out
-				      .print(operazione);
+							.print(operazione);
 					continue;
 					// il client continua l'esecuzione riprendendo dall'inizio del ciclo
 				}
-			
+
 				// tutto ok, pronto per nuova richiesta
 				System.out
-			    	.print(operazione);
+						.print(operazione);
 			} // while
 		}
 		// qui catturo le eccezioni non catturate all'interno del while
@@ -148,5 +148,5 @@ public class ClientUdp {
 		System.out.println("ClientUdp: termino...");
 		socket.close();
 	}
-    
+
 }
