@@ -6,3 +6,5 @@
 * Socket implementate con primitiva Select
 * Java RMI
 * RPC di Sun
+
+> Utilities contiene dei files Java/C utili per operazioni base
