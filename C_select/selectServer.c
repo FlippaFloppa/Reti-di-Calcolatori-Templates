@@ -12,9 +12,19 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-#define DIM_BUFF 100
+#define DIM_BUFF 1024
 #define LENGTH_FILE_NAME 20
+#define WORD_LENGHT 20
+#define STRUCT_SIZE 1
 #define max(a, b) ((a) > (b) ? (a) : (b))
+
+
+typedef struct stutturaDati
+{
+    char targa[WORD_LENGHT];
+    char patente[WORD_LENGHT];
+}prenotazione;
+
 
 // Modificare se necessario
 void gestore(int signo)
@@ -24,14 +34,23 @@ void gestore(int signo)
     wait(&stato);
 }
 
+
+
+
 int main(int argc, char **argv)
 {
-    int listenfd, connfd, udpfd, fd_file, nready, maxfdp1;
+    int listenfd, connfd, udpfd, fd_file, nready, maxfdp1,filefd,fileSize=-1;
     const int on = 1;
     char buff[DIM_BUFF], nome_file[LENGTH_FILE_NAME], nome_dir[LENGTH_FILE_NAME];
+    char targa[10];
+    char end[1];
+	end[0] = (char)4;
     fd_set rset;
     int len, nread, nwrite, num, ris, port;
     struct sockaddr_in cliaddr, servaddr;
+    DIR *mainDir;
+    struct dirent *cur;
+    prenotazione request;
 
     // CONTROLLO ARGOMENTI
     if (argc != 2)
@@ -64,6 +83,10 @@ int main(int argc, char **argv)
     servaddr.sin_port = htons(port);
     printf("Server avviato\n");
 
+    /*INIZIALIZZAZIONE STRUTTURA DATI*/
+    prenotazione prenotazioni[STRUCT_SIZE];
+    strcpy(prenotazioni[0].patente,"393949");
+    strcpy(prenotazioni[0].targa,"AB123AA");
 
     /* CREAZIONE SOCKET TCP ------------------------------------------------ */
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -146,7 +169,7 @@ int main(int argc, char **argv)
         /* GESTIONE RICHIESTE DI GET DI UN FILE ------------------------------------- */
         if (FD_ISSET(listenfd, &rset))
         {
-            printf("Ricevuta richiesta di get di un file\n");
+            printf("Ricevuta richiesta di download di immagini\n");
             len = sizeof(struct sockaddr_in);
             if ((connfd = accept(listenfd, (struct sockaddr *)&cliaddr, &len)) < 0)
             {
@@ -164,64 +187,84 @@ int main(int argc, char **argv)
             if (fork() == 0)
             { /* processo figlio che serve la richiesta di operazione */
                 close(listenfd);
-                printf("Dentro il figlio, pid=%i\n", getpid());
-                /* non c'� pi� il ciclo perch� viene creato un nuovo figlio */
-                /* per ogni richiesta di file */
-                if (read(connfd, &nome_file, sizeof(nome_file)) <= 0)
-                {
-                    perror("read");
-                    break;
-                }
+				printf("Dentro il figlio, pid=%i\n", getpid());
 
-                printf("Richiesto file %s\n", nome_file);
-                fd_file = open(nome_file, O_RDONLY);
-                if (fd_file < 0)
-                {
-                    printf("File inesistente\n");
-                    write(connfd, "N", 1);
-                }
-                else
-                {
-                    write(connfd, "S", 1);
-                    /* lettura e invio del file (a blocchi)*/
-                    printf("Leggo e invio il file richiesto\n");
-                    while ((nread = read(fd_file, buff, sizeof(buff))) > 0)
-                    {
-                        if ((nwrite = write(connfd, buff, nread)) < 0)
-                        {
-                            perror("write");
-                            break;
-                        }
-                    }
-                    printf("Terminato invio file\n");
-                    /* non � pi� necessario inviare al client un segnale di terminazione */
-                    close(fd_file);
-                }
+                while ((num = read(connfd, targa, sizeof(targa))) > 0)
+				{
+                    strcpy(nome_dir,targa);
+                    strcat(nome_dir,"_img");
 
-                /*la connessione assegnata al figlio viene chiusa*/
+					printf("Richiesto trasferimento immagini da %s\n", nome_dir);
+
+					mainDir = opendir(nome_dir);
+					if (mainDir == NULL)
+					{
+						printf("Directory non valida\n");
+						write(connfd,&fileSize,4);
+					}
+					else
+					{
+						while ((cur = readdir(mainDir)) != NULL)
+						{
+                            printf("Esploro %s\n",cur->d_name);
+
+							if (cur->d_type != DT_DIR)
+							{
+								strcpy(nome_file, nome_dir);
+								strcat(strcat(nome_file, "/"), cur->d_name);
+
+                                filefd=open(nome_file,O_RDONLY);
+                                fileSize=lseek(filefd,0,SEEK_END);
+                                write(connfd,&fileSize,sizeof(fileSize));
+                                lseek(filefd,0,SEEK_SET);
+
+                                fileSize=strlen(cur->d_name)+1;
+                                write(connfd,&fileSize,4);
+								write(connfd,cur->d_name,strlen(cur->d_name)+1);
+
+								printf("Trasferisco:\t%s\t%d\n", nome_file,fileSize);
+
+                                while((nread=read(filefd,buff,sizeof(buff))) > 0){
+                                    write(connfd,buff,nread);
+                                }
+							}
+						}
+
+                        // Finiti i files
+                        fileSize=0;
+                        write(connfd,&fileSize,4); // Print carattere terminatore
+                        printf("File terminati\n\n");
+					}
+				}
+
                 printf("Figlio %i: termino\n", getpid());
-                shutdown(connfd, 0);
-                shutdown(connfd, 1);
-                close(connfd);
-                exit(0);
+				shutdown(connfd, 0);
+				shutdown(connfd, 1);
+				close(connfd);
+				exit(0);
             }
         }
 
         /* GESTIONE RICHIESTE DI CONTEGGIO ------------------------------------------ */
         if (FD_ISSET(udpfd, &rset))
         {
-            printf("Ricevuta richiesta di conteggio file\n");
-
+            num=0;
             len = sizeof(struct sockaddr_in);
-            if (recvfrom(udpfd, &nome_dir, sizeof(nome_dir), 0, (struct sockaddr *)&cliaddr, &len) < 0)
+            if (recvfrom(udpfd, &request, sizeof(prenotazione), 0, (struct sockaddr *)&cliaddr, &len) < 0)
             {
                 perror("recvfrom");
                 continue;
             }
 
-            printf("Richiesto conteggio dei file in %s\n", nome_dir);
-            num = conta_file(nome_dir);
-            printf("Risultato del conteggio: %i\n", num);
+            printf("Richiesto aggiornamento targa %s\n",request.targa);
+
+            for(int i=0;i<STRUCT_SIZE && num<1;i++){
+                if(strcmp(prenotazioni[i].targa,request.targa)==0){
+                    strcpy(prenotazioni[i].patente,request.patente);
+                    num=1;
+                    printf("Aggiornata targa %s con patente %s\n\n",prenotazioni[i].targa,prenotazioni[i].patente);
+                }
+            }
 
             ris = htonl(num);
             if (sendto(udpfd, &ris, sizeof(ris), 0, (struct sockaddr *)&cliaddr, len) < 0)
