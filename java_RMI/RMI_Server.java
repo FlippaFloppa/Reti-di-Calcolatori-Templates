@@ -10,7 +10,7 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_interfaceFile
 	}
 
 	// Implementa metodo1
-    public metodo1(int parametro1){
+    public int metodo1(int parametro1){
         if(parametro1>0)return 0;
         else return -1;
     }

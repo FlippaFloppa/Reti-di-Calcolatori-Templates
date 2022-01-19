@@ -7,7 +7,7 @@
 ### Deploy Server 
 - Compila Interface e Server: `javac RMI_Server.java RMI_interfaceFile.java`
 - Genera stub e skeleton: `rmic -vcompat RMI_Server`
-- Lancia il registry in una shell separata: `rmiregistry`
+- Lancia il registry in una shell separata: `rmiregistry` nella stessa cartella del server/client
 - Lancia il server: `java RMI_Server ....`
 
 ### Deploy Client
