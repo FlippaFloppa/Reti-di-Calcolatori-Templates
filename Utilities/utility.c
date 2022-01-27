@@ -14,6 +14,7 @@
 
 #define DIM_BUFF 1024
 #define SIZE 256
+#define N 10
 
 int endsWith(const char *str, const char *suffix);
 int startsWith(const char *str, const char *prefix);
@@ -21,6 +22,7 @@ int isNumeric(const char *str);
 void ricevi_file(int sd);
 void invia_file(int connfd);
 int *elimina_occorrenze_1_svc(char **in /*, struct svc_req *rqstp*/);
+int check_number();
 
 int endsWith(const char *str, const char *suffix)
 {
@@ -256,8 +258,35 @@ int *elimina_occorrenze_1_svc(char **in /*, struct svc_req *rqstp*/)
     return &res;
 }
 
+int check_number()
+{
+    int ok, num;
+    char number[SIZE];
+    scanf("%s", number); // scanf of the big while
+
+    do
+    {
+        ok = 1;
+        for (int i = 0; i < strlen(number) && ok; i++)
+        {
+            if ((number[i] < '0') || (number[i] > '9'))
+            {
+                ok = 0;
+            }
+        }
+        if (!ok)
+        {
+            printf("Inserisci prezzo minimo\n");
+            scanf("%s", number);
+        }
+    } while (!ok);
+
+    num = atoi(number);
+    return num;
+}
+
 int main(int argc, char const *argv[])
 {
-    /* code */
+
     return 0;
 }
