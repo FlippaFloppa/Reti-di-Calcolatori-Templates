@@ -30,14 +30,14 @@ public class Utility {
         outSock.writeUTF(direttorio);
 
         // while (!ok) {
-        //     System.out.println("Inserisci dim minima");
-        //     dimMinima = stdIn.readLine();
-        //     try {
-        //         dimMin = Long.parseLong(dimMinima);
-        //         ok = true;
-        //     } catch (NumberFormatException e) {
-        //         continue;
-        //     }
+        // System.out.println("Inserisci dim minima");
+        // dimMinima = stdIn.readLine();
+        // try {
+        // dimMin = Long.parseLong(dimMinima);
+        // ok = true;
+        // } catch (NumberFormatException e) {
+        // continue;
+        // }
         // }
 
         outSock.writeLong(dimMin);
@@ -49,7 +49,7 @@ public class Utility {
         while (numFile > 0) {
             // ricevo la dim
             dim = inSock.readLong();
-            if (numFile > 0) {
+            if (dim >= 0) {
                 // ricevo il nome
                 nomeFile = inSock.readUTF();
                 System.out.println("Ricevo " + nomeFile + " dim: " + dim);
@@ -203,5 +203,23 @@ public class Utility {
 
         System.out.println("Invio res: " + numeroOccorrenze);
         outSock.writeInt(numeroOccorrenze);
+    }
+
+    public void check_argomenti(BufferedReader stdIn) throws IOException {
+
+        boolean ok = false;
+        String numero;
+
+        while (!ok) {
+            System.out.println("Inserisci numero");
+            numero = stdIn.readLine();
+            try {
+                Integer.parseInt(numero);
+                ok = true;
+            } catch (NumberFormatException e) {
+                continue;
+            }
+        }
+
     }
 }
