@@ -17,6 +17,7 @@
 
 int endsWith(const char *str, const char *suffix);
 int startsWith(const char *str, const char *prefix);
+int isNumeric(const char *str);
 void ricevi_file(int sd);
 void invia_file(int connfd);
 int *elimina_occorrenze_1_svc(char **in /*, struct svc_req *rqstp*/);
@@ -30,6 +31,17 @@ int endsWith(const char *str, const char *suffix)
 int startsWith(const char *str, const char *prefix)
 {
     return strncmp(str, prefix, strlen(prefix));
+}
+
+int isNumeric(const char *str)
+{
+    while (*str != '\0')
+    {
+        if (*str < '0' || *str > '9')
+            return 0;
+        str++;
+    }
+    return 1;
 }
 
 void ricevi_file(int sd)
@@ -125,7 +137,7 @@ void invia_file(int connfd)
                         // verifico dimensione minima
                         // if (lseek(filefd, 0, SEEK_END) > dimMinima)
                         // {
-                            numFile++;
+                        numFile++;
                         // }
                         close(filefd);
                     }
