@@ -180,6 +180,7 @@ void invia_file(int connfd)
                     }
                 }
             }
+            closedir(mainDir);
             // Finiti i files
             printf("File terminati\n\n");
         }
