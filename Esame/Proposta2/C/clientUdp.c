@@ -42,11 +42,6 @@ int main(int argc, char **argv)
     memset((char *)&clientaddr, 0, sizeof(struct sockaddr_in));
     clientaddr.sin_family = AF_INET;
     clientaddr.sin_addr.s_addr = INADDR_ANY;
-
-    /* Passando 0 ci leghiamo ad un qualsiasi indirizzo libero,
-     * ma cio' non funziona in tutti i sistemi.
-     * Se nel nostro sistema cio' non funziona come si puo' fare?
-     */
     clientaddr.sin_port = 0;
 
     memset((char *)&servaddr, 0, sizeof(struct sockaddr_in));
@@ -134,7 +129,7 @@ int main(int argc, char **argv)
         else
             printf("Ricevuto risultato: %d!\n\n", res);
         printf("%s", operazione);
-    } // while gets
+    }
 
     // CLEAN OUT
     close(sd);

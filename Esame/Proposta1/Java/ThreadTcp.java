@@ -52,8 +52,11 @@ public class ThreadTcp extends Thread {
                 }
 
             }
+            clientSocket.shutdownOutput();
+            clientSocket.shutdownInput();
             this.clientSocket.close();
-
+            inSock.close();
+            outSock.close();
         }
         // qui catturo le eccezioni non catturate all'interno del while
         // in seguito alle quali il server termina l'esecuzione

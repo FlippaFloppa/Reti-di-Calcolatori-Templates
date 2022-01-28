@@ -32,12 +32,6 @@ public class ClientTcp {
         // creazione stream di input da tastiera
         BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 
-        String op1 = "A";
-        String op2 = "B";
-
-        String operation = "\n^D(Unix)/^Z(Win)+invio per uscire\n Inserisci: " + op1 + " o " + op2
-                + System.lineSeparator();
-
         // creazione socket
         try {
             socket = new Socket(addr, port);
@@ -59,7 +53,11 @@ public class ClientTcp {
             e.printStackTrace();
             System.exit(-1);
         }
+        String op1 = "A";
+        String op2 = "B";
 
+        String operation = "\n^D(Unix)/^Z(Win)+invio per uscire\n Inserisci: " + op1 + " o " + op2
+                + System.lineSeparator();
         System.out.print(operation);
         String line;
 
@@ -106,6 +104,9 @@ public class ClientTcp {
             }
             socket.shutdownInput();
             socket.shutdownOutput();
+            inSock.close();
+            outSock.close();
+            stdIn.close();
             socket.close();
             System.out.println("ClientTcp: termino...");
         }

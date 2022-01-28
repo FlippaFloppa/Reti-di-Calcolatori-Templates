@@ -35,7 +35,7 @@ typedef struct
 int main(int argc, char **argv)
 {
     // variabili di connessione
-    int listenfd, connfd, udpfd, fd_file, nready, maxfdp1, filefd;
+    int listenfd, connfd, udpfd, nready, maxfdp1, filefd;
     const int on = 1;
     fd_set rset;
     int len, nread, nwrite, num, port;

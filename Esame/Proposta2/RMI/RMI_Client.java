@@ -59,7 +59,7 @@ public class RMI_Client {
 				}
 				System.out.println(richiesta);
 			}
-
+			stdIn.close();
 		} catch (NotBoundException nbe) {
 			System.err.println("ClientRMI: il nome fornito non risulta registrato; " + nbe.getMessage());
 			nbe.printStackTrace();
