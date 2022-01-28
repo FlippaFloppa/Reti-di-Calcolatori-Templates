@@ -1,9 +1,3 @@
-#define h_addr h_addr_list[0]
-#define DIM_BUFF 1024
-#define LENGTH_FILE_NAME 20
-#define WORD_LENGHT 20
-#define STRUCT_SIZE 7
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -12,6 +6,12 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <string.h>
+
+#define h_addr h_addr_list[0]
+#define DIM_BUFF 1024
+#define LENGTH_FILE_NAME 20
+#define WORD_LENGHT 20
+#define STRUCT_SIZE 7
 
 typedef struct
 {
