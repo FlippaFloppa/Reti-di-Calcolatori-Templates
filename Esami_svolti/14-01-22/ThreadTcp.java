@@ -26,6 +26,7 @@ public class ThreadTcp extends Thread {
     }
 
     public void run() {
+        BufferedReader inReadFile;
         DataInputStream inSock;
         DataOutputStream outSock;
         String esito,dir;
@@ -144,9 +145,15 @@ public class ThreadTcp extends Thread {
     
                                 inFile=new FileInputStream(f);
                                 FileUtility.trasferisci_a_byte_file_binario(new DataInputStream(inFile), outSock);
+
+                                inReadFile=new BufferedReader(new FileReader(f));
+                                while((line=inReadFile.readLine())!=null){
+                                    outSock.writeUTF(line);
+                                }
+                                inReadFile.close();
+
                                 inFile.close();
                             }
-                            
                         }
 
                         System.out.println("Invio file terminato");
