@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -37,6 +38,7 @@ public class ClientTcp {
 		// oggetti utilizzati dal client per la comunicazione e la lettura del file
 		// locale
 		Socket socket = null;
+		FileWriter fileOut;
 		FileOutputStream outFile = null;
 		DataInputStream inSock = null;
 		DataOutputStream outSock = null;
@@ -168,6 +170,12 @@ public class ClientTcp {
 							outFile=new FileOutputStream(nomeFile);
 							FileUtility.trasferisci_a_byte_file_binario(inSock, new DataOutputStream(outFile));
 							outFile.close();
+
+							fileOut=new FileWriter(nomeFile);
+							while((line=inSock.readUTF())!=null){
+								fileOut.write(line);
+							}
+							fileOut.close();
 						}
 					}
 
