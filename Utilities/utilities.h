@@ -24,3 +24,5 @@ int isDirectory(const char *path)
 	return S_ISDIR(statbuf.st_mode);
 }
 /********************************************************/
+
+NATAN PALLE
